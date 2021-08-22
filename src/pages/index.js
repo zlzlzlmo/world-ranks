@@ -11,7 +11,7 @@ export default function Home({ countries }) {
     <Layout>
       <div>총 {countries.length}개의 나라를 검색했어요</div>
       <SearchInput placeholder="나라를 입력하세요" />
-      <CountriesTable />
+      <CountriesTable countries={countries} />
     </Layout>
   );
 }
