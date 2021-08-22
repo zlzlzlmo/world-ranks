@@ -1,34 +1,80 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 나라별 정보를 보여주는 웹어플리케이션
 
-## Getting Started
+## 사용언어는 ?
 
-First, run the development server:
+> Next.js, React
 
-```bash
-npm run dev
-# or
-yarn dev
+## 사용 패키지 || 라이브러리는 ?
+
+> Material-Ui
+
+## 👀 어떤 모습으로 개발이 되었나?
+
+![](https://images.velog.io/images/hoon_dev/post/33c3eb9f-6ee2-422e-851c-5b7b6fbf00df/image.png)
+![](https://images.velog.io/images/hoon_dev/post/92bf2066-88d4-4da4-8613-de054de4e53f/image.png)
+
+## 🕹 구현기능
+
+---
+
+### 나라 검색
+
+-
+
+```js
+//SSG 데이터 패칭
+export const getStaticProps = async () => {
+  const res = await fetch(`https://restcountries.eu/rest/v2/all`);
+  const countries = await res.json();
+  return {
+    props: {
+      countries,
+    },
+  };
+};
+
+//검색 Keyword 필터링 후 데이터 출력
+const filteredCountries = countries.filter(
+  (country) =>
+    country.name.toLowerCase().includes(keyword) ||
+    country.region.toLowerCase().includes(keyword) ||
+    country.subregion.toLowerCase().includes(keyword)
+);
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 나라명 및 인구수별 내림차순, 오름차순
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```js
+//countries는 검색어로 필터링된 데이터 리스트
+//value는 객체의 키 값 -> name과 population이 들어옴, name은 나라명 population은 인구수
+//direction은 오름차순으로 할건지 내림차순으로 할건지
+const orderBy = (countries, value, direction) => {
+  if (direction === "asc") {
+    return [...countries].sort((a, b) => (a[value] > b[value] ? 1 : -1));
+  }
+  if (direction === "desc") {
+    return [...countries].sort((a, b) => (a[value] > b[value] ? -1 : 1));
+  }
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+  return countries;
+};
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### 상세페이지 기능
 
-## Learn More
+```js
+//파라미터 받아와 유동적으로 데이터 패칭 후 나라별 상세 데이터 출력
+export const getServerSideProps = async ({ params }) => {
+  const res = await fetch(
+    `https://restcountries.eu/rest/v2/alpha/${params.id}`
+  );
+  const country = await res.json();
+  return {
+    props: { country, id: params.id },
+  };
+};
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+😎 감사합니다 :)
